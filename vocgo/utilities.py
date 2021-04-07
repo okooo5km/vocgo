@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 """
 @fileName      : utilities.py
-@desc          : the utilities for usual methods
+@desc          : Usual methods
 @dateTime      : 2021/04/07 13:30:26
 @author        : 5km
 @contact       : 5km@smslit.cn

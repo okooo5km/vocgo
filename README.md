@@ -1,8 +1,8 @@
 # VOCGO
 
-This is a simple tool for VOC dataset, it can help you analyze and process the dataset, its chinese name is "窝酷狗".
+VOCGO is a simple tool for VOC dataset that can help to analyze and process the dataset, and it has a intresting chinese name - [窝酷狗].
 
-use [poetry](https://python-poetry.org/) to build the package and manage the dependece.
+VOCGO uses [poetry](https://python-poetry.org/) to build the package and manage the dependece.
 
 ## python 
 
@@ -69,7 +69,7 @@ For example:
 vocgo list ./
 ```
 
-![list](https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/list-20210407204555.png)
+<img src="https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/list-20210407204555.png" width="480px">
 
 ### generate
 
@@ -77,4 +77,8 @@ This subcommad can help prepare the data files(train.txt valid.txt label_list.tx
 
 For example:
 
-![generate](https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/generate-20210407204613.png)
+```shell
+vocgo generate --ratio=0.9 ./
+```
+
+<img src="https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/generate-20210407204613.png" width="480px">

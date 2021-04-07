@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 """
 @fileName      : list_stat.py
-@desc          : analyze the dataset and display the statistics
+@desc          : Analyze the dataset and display the statistics
 @dateTime      : 2021/04/06 17:38:25
 @author        : 5km
 @contact       : 5km@smslit.cn

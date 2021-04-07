@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 """
 @fileName      : prepare_data.py
-@desc          : generate the train files for model training and evaluating 
+@desc          : Generate the train files for model training and evaluating 
 @dateTime      : 2021/04/07 15:45:39
 @author        : 5km
 @contact       : 5km@smslit.cn

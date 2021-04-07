@@ -9,4 +9,7 @@
 """
 
 __version__ = "0.1.0"
-__description__ = "This is a simple tool for VOC dataset, it can help you analyze and process the dataset, its chinese name is 「窝酷狗」，more details to https://github.com/smslit/vocgo"
+__description__ = "VOCGO is a simple tool for VOC dataset " \
+    "that can help to analyze and process the dataset, " \
+    "and it has a intresting chinese name - [窝酷狗]. " \
+    "More details at https://github.com/smslit/vocgo"

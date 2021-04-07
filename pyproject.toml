@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "vocgo"
 version = "0.1.0"
-description = "This is a simple tool for VOC dataset, it can help you analyze and process the dataset, its chinese name is 「窝酷狗」"
+description = "VOCGO is a simple tool for VOC dataset that can help to analyze and process the dataset, and it has a intresting chinese name - [窝酷狗]"
 authors = ["5km <5km@smslit.cn>"]
 maintainers = ["5km <5km@smslit.cn>"]
 readme = "README.md"

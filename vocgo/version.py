@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 """
 @fileName      : version.py
-@desc          : display the version info
+@desc          : Display the version info
 @dateTime      : 2021/04/06 17:32:47
 @author        : 5km
 @contact       : 5km@smslit.cn
