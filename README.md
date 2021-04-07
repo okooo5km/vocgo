@@ -69,7 +69,7 @@ For example:
 vocgo list ./
 ```
 
-![list](images/list.png)
+![list](https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/list-20210407204555.png)
 
 ### generate
 
@@ -77,4 +77,4 @@ This subcommad can help prepare the data files(train.txt valid.txt label_list.tx
 
 For example:
 
-![generate](images/generate.png)
+![generate](https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/generate-20210407204613.png)
