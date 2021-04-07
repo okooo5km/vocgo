@@ -6,7 +6,9 @@ use [poetry](https://python-poetry.org/) to build the package and manage the dep
 
 ## python 
 
->=python3.6.7。
+```
+>=python3.6.7
+```
 
 ## Installing
 
