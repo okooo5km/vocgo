@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "vocgo"
+version = "0.1.0-alpha"
+description = "This is a simple tool for VOC dataset, it can help you analyze and process the dataset, its chinese name is 「窝酷狗」"
+authors = ["5km <5km@smslit.cn>"]
+maintainers = ["5km <5km@smslit.cn>"]
+readme = "README.md"
+license = "MIT"
+homepage = "https://github.com/smslit/vocgo"
+classifiers = [
+    "Topic :: Utilities",
+    "Topic :: Terminals"
+]
+
+[[tool.poetry.source]]
+name = "aliyun"
+url = "https://mirrors.aliyun.com/pypi/simple/"
+
+[tool.poetry.scripts]
+vocgo = "vocgo.main:app"
+
+[tool.poetry.dependencies]
+python = "^3.6"
+typer = "^0.3.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+autopep8 = "^1.5.4"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
