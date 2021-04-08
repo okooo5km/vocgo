@@ -81,4 +81,4 @@ For example:
 vocgo split --ratio=0.9 ./
 ```
 
-<img src="https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/split-20210408140239.png" width="360px">
+<img src="https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/split-20210408140711.png" width="360px">
