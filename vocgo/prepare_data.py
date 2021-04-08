@@ -2,7 +2,8 @@
 # -*- encoding: utf-8 -*-
 """
 @fileName      : prepare_data.py
-@desc          : Generate the train files for model training and evaluating 
+@desc          : Split the dataset and generate the train files 
+                 for model training and evaluating 
 @dateTime      : 2021/04/07 15:45:39
 @author        : 5km
 @contact       : 5km@smslit.cn
@@ -77,7 +78,7 @@ def main(directory: str = typer.Argument(default="./",
     }, key_width=10)
     tip_info += tip_info_for_dict(count, key_width=10)
     typer.echo(tip_info)
-    typer.secho("Generate train.txt valid.txt label_list.txt successfully!",
+    typer.secho("Split the dataset and generate train.txt valid.txt label_list.txt successfully!",
                 fg=typer.colors.BRIGHT_BLUE)
 
 

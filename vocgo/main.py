@@ -20,5 +20,5 @@ app = typer.Typer(help=__description__)
 app.command("version", help="Display the version info")(version.main)
 app.command("list", help="Analyze the dataset and display the statistics")(
     list_stat.main)
-app.command("generate", help="Generate the train files for model training and evaluating")(
+app.command("split", help="Split the dataset and generate the train files for model training and evaluating")(
     prepare_data.main)
