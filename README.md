@@ -69,16 +69,16 @@ For example:
 vocgo list ./
 ```
 
-<img src="https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/list-20210407204555.png" width="480px">
+<img src="https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/list-20210407204555.png" width="360px">
 
-### generate
+### split
 
-This subcommad can help prepare the data files(train.txt valid.txt label_list.txt) based on anns and imgs data.
+This subcommad can help to split the dataset and generate the data files(train.txt valid.txt label_list.txt) based on anns and imgs data. It will display the spliting details!
 
 For example:
 
 ```shell
-vocgo generate --ratio=0.9 ./
+vocgo split --ratio=0.9 ./
 ```
 
-<img src="https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/generate-20210407204613.png" width="480px">
+<img src="https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/split-20210408140239.png" width="360px">
