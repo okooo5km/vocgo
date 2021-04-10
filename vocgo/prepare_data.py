@@ -10,10 +10,10 @@
 """
 
 import os
+import shutil
 import os.path as osp
-from enum import Enum
+from typing import Dict
 from random import shuffle
-from typing import Dict, List
 
 import typer
 
@@ -34,10 +34,7 @@ def save_datapath_to_txt(imgs, save_file):
             f.write(line)
 
 
-def prepare_train_valid_data(data_dir, train_ratio) -> Dict[str, int]:
-    img_dir = osp.join(data_dir, "imgs")
-
-    imgs = os.listdir(img_dir)
+def prepare_train_valid_data(data_dir, imgs, train_ratio) -> Dict[str, int]:
     img_n = len(imgs)
     train_n = int(img_n*train_ratio)
 
@@ -61,34 +58,68 @@ def prepare_lable_list(data_dir, labels):
 def main(directory: str = typer.Argument(default="./",
                                          callback=VocCallback.check_dir_valid,
                                          help=ARGUMENT_HELP),
-         ratio: float = typer.Option(default=1.0, help=RATIO_HELP)):
-    count = list_stat(directory=directory)
-    labels = list(count["cls"].keys())
+         ratio: float = typer.Option(default=1.0, help=RATIO_HELP),
+         labels: str = typer.Option(None, help="The label to learn", ),
+         export_dir: str = typer.Option(None, help="The exporting dir path of the training files")):
+
+    directory = os.path.abspath(directory)
+    if not export_dir:
+        export_dir = typer.prompt(
+            "\nPlease specify a exporting directory name")
+    export_dir_path = os.path.join(directory, export_dir)
+    imgs_path = os.path.join(directory, "imgs")
+
+    # confirm to create the export directory
+    if os.path.exists(export_dir_path):
+        typer.secho(f"\nThe directory 「{export_dir}」 exists!",
+                    fg=typer.colors.BRIGHT_YELLOW)
+        override = typer.confirm("\nDo you overide it?")
+        if not override:
+            export_dir = typer.prompt(
+                "\nPlease specify a exporting directory name")
+            export_dir_path = os.path.join(directory, export_dir)
+        else:
+            shutil.rmtree(export_dir_path)
+    os.makedirs(export_dir_path)
+
+    # link the imgs directory
+    imgs_export_path = os.path.join(export_dir_path, "imgs")
+    anns_export_path = os.path.join(export_dir_path, "anns")
+    link_imgs_command = f"ln -s {imgs_path} {imgs_export_path}"
+    os.system(link_imgs_command)
+    os.makedirs(anns_export_path, exist_ok=True)
+
+    if "," in labels:
+        label = labels.split(",")
+    else:
+        label = [labels]
+
+    info = list_stat(directory=directory,
+                     filter_labels=label,
+                     anns_path=anns_export_path)
+
+    labels = sorted(list(info["cls"].keys()))
 
     # generate train.txt、 valid.txt
-    count = prepare_train_valid_data(directory, ratio)
+    count = prepare_train_valid_data(export_dir_path,
+                                     info["valid_imgs"],
+                                     ratio)
     # generate label_list
-    prepare_lable_list(directory, labels)
+    prepare_lable_list(export_dir_path, labels)
 
     tip_info = "\n"
     tip_info += tip_info_for_dict({
-        "voc dir": directory,
-        "labels": ", ".join(labels),
+        "voc dir": os.path.relpath(export_dir_path),
+        "train file": os.path.relpath(os.path.join(export_dir_path, "train.txt")),
+        "valid file": os.path.relpath(os.path.join(export_dir_path, "valid.txt")),
+        "label list": os.path.relpath(os.path.join(export_dir_path, "label_list.txt")),
+        "train labels": ", ".join(labels),
         "ratio": ratio,
-    }, key_width=10)
-    tip_info += tip_info_for_dict(count, key_width=10)
+    }, key_width=15)
+    tip_info += tip_info_for_dict(count, key_width=15)
+    tip_info += typer.style("\nSplit the dataset and export files to ",
+                            fg=typer.colors.BRIGHT_BLACK)
+    tip_info += typer.style(f"{export_dir_path}",
+                            fg=typer.colors.BRIGHT_GREEN, bold=True)
+    tip_info += typer.style(" successfully!", fg=typer.colors.BRIGHT_BLACK)
     typer.echo(tip_info)
-    typer.secho("Split the dataset and generate train.txt valid.txt label_list.txt successfully!",
-                fg=typer.colors.BRIGHT_BLUE)
-
-
-if __name__ == "__main__":
-    data_dir = "/data/tianye/paddle/PaddleDetection/dataset/bank"
-    train_ratio = 1.0
-    labels = ['customer', 'security', 'teller']
-
-    # 创建train.txt、valid.txt
-    prepare_train_valid_data(data_dir, train_ratio)
-
-    # 创建label_list
-    prepare_lable_list(data_dir, labels)
