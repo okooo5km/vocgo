@@ -69,16 +69,18 @@ For example:
 vocgo list ./
 ```
 
-<img src="https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/list-20210407204555.png" width="360px">
+<img src="https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/list-20210410170643.png" width="420px">
 
 ### split
 
 This subcommad can help to split the dataset and generate the data files(train.txt valid.txt label_list.txt) based on anns and imgs data. It will display the spliting details!
 
+We can specify some labels to filter the necessary data, and specify a diretory to export training files.
+
 For example:
 
 ```shell
-vocgo split --ratio=0.9 ./
+vocgo split --labels=mask,no_mask --ratio=0.9 ./
 ```
 
-<img src="https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/split-20210408140711.png" width="360px">
+<img src="https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/split-20210410170657.png" width="640px">
