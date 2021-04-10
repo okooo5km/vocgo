@@ -19,22 +19,34 @@ from .utilities import VocCallback, ANN_DIR_NAME, IMAGE_DIR_NAME, tip_info_for_d
 ARGUMENT_HELP = "The directory of VOC dataset containing two dirs(imgs and anns)"
 
 
-def list_stat(directory: str) -> Dict[str, Any]:
+def list_stat(directory: str, filter_labels=None, anns_path: str = None) -> Dict[str, Any]:
     """analyze the VOC dataset
 
     Args:
         directory (str): the directory of VOC dataset
+        filter_labels (iterable obj): the necessary labels
+        anns_path (str): anns target path
 
     Returns:
         Dict[str, Any]: the statistics data
     """
+
+    if filter_labels:
+        if not anns_path:
+            raise Exception(
+                "Need to specify anns directory path if you specify the filter_labels!")
+        if not os.path.exists(anns_path):
+            raise Exception(
+                "The anns path to export annotation file does not exist!")
+
     anns_dir = os.path.join(directory, ANN_DIR_NAME)
     imgs_dir = os.path.join(directory, IMAGE_DIR_NAME)
-    count = {
+    info = {
         "no_danger": 0,
         "danger": 0,
         "no_xml": [],
-        "cls": {}
+        "cls": {},
+        "valid_imgs": []
     }
 
     img_names = os.listdir(imgs_dir)
@@ -51,26 +63,57 @@ def list_stat(directory: str) -> Dict[str, Any]:
         "empty_char": ""
     }
     with typer.progressbar(**processbar_args) as progress:
-        for img_name in img_names:
-            ann_name = f"{os.path.splitext(img_name)[0]}.xml"
-            ann_path = os.path.join(anns_dir, ann_name)
-            if not os.path.exists(ann_path):
-                count["no_xml"].append(img_name)
-                continue
-            xml_tree = ET.parse(ann_path)
-            xml_root = xml_tree.getroot()
-            if xml_root.find("object"):
-                count["danger"] += 1
-                for obj in xml_root.iter("object"):
-                    obj_cls = obj.find("name").text
-                    if obj_cls not in count["cls"]:
-                        count["cls"][obj_cls] = 0
-                    count["cls"][obj_cls] += 1
-            else:
-                count["no_danger"] += 1
-            progress.update(1)
-
-    return count
+        if filter_labels or anns_path:
+            for img_name in img_names:
+                dangerous = False
+                ann_name = f"{os.path.splitext(img_name)[0]}.xml"
+                ann_path = os.path.join(anns_dir, ann_name)
+                if not os.path.exists(ann_path):
+                    info["no_xml"].append(img_name)
+                    continue
+                xml_tree = ET.parse(ann_path)
+                xml_root = xml_tree.getroot()
+                to_remove = []
+                if xml_root.find("object"):
+                    for obj in xml_root.iter("object"):
+                        obj_cls = obj.find("name").text
+                        if filter_labels and (obj_cls not in filter_labels):
+                            to_remove.append(obj)
+                            continue
+                        dangerous = True
+                        if obj_cls not in info["cls"]:
+                            info["cls"][obj_cls] = 0
+                        info["cls"][obj_cls] += 1
+                if dangerous:
+                    info["danger"] += 1
+                    info["valid_imgs"].append(img_name)
+                    ann_export_path = os.path.join(anns_path, ann_name)
+                    for obj in to_remove:
+                        xml_root.remove(obj)
+                    xml_tree.write(ann_export_path)
+                else:
+                    info["no_danger"] += 1
+                progress.update(1)
+        else:
+            for img_name in img_names:
+                ann_name = f"{os.path.splitext(img_name)[0]}.xml"
+                ann_path = os.path.join(anns_dir, ann_name)
+                if not os.path.exists(ann_path):
+                    info["no_xml"].append(img_name)
+                    continue
+                xml_tree = ET.parse(ann_path)
+                xml_root = xml_tree.getroot()
+                if xml_root.find("object"):
+                    info["danger"] += 1
+                    for obj in xml_root.iter("object"):
+                        obj_cls = obj.find("name").text
+                        if obj_cls not in info["cls"]:
+                            info["cls"][obj_cls] = 0
+                        info["cls"][obj_cls] += 1
+                else:
+                    info["no_danger"] += 1
+                progress.update(1)
+    return info
 
 
 def main(directory: str = typer.Argument(default="./",
