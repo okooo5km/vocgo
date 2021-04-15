@@ -9,6 +9,7 @@
 """
 
 import os
+import shutil
 from typing import Dict, Any
 
 import typer
@@ -52,3 +53,22 @@ def tip_info_for_dict(dict_data: Dict[str, Any], key_width: int = 20, only_int=F
         tip_info += typer.style(f"{value}\n",
                                 fg=typer.colors.BRIGHT_GREEN, bold=True)
     return tip_info
+
+
+def check_and_make_dir(root_path,
+                       dir_name,
+                       promp_str: str = "\nPlease input another one") -> str:
+    # confirm to create the export directory
+    path = os.path.join(root_path, dir_name)
+    if os.path.exists(path):
+        typer.secho(f"\nThe directory 「{path}」 exists!",
+                    fg=typer.colors.BRIGHT_YELLOW)
+        override = typer.confirm("\nDo you overide it?")
+        if not override:
+            export_dir = typer.prompt(promp_str)
+            path = os.path.join(root_path, export_dir)
+        else:
+            shutil.rmtree(path)
+    os.makedirs(path)
+
+    return path

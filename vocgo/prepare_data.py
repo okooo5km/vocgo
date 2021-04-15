@@ -17,8 +17,8 @@ from random import shuffle
 
 import typer
 
-from .utilities import VocCallback, tip_info_for_dict
 from .list_stat import ARGUMENT_HELP, list_stat
+from .utilities import VocCallback, check_and_make_dir, tip_info_for_dict
 
 RATIO_HELP = "The distribution ratio of model training and evaluating"
 LABEL_SORT_HELP = "The sort type for class label"
@@ -68,21 +68,10 @@ def main(directory: str = typer.Argument(default="./",
     if not export_dir:
         export_dir = typer.prompt(
             "\nPlease specify a exporting directory name")
-    export_dir_path = os.path.join(directory, export_dir)
     imgs_path = os.path.join(directory, imgs_dir)
 
-    # confirm to create the export directory
-    if os.path.exists(export_dir_path):
-        typer.secho(f"\nThe directory 「{export_dir}」 exists!",
-                    fg=typer.colors.BRIGHT_YELLOW)
-        override = typer.confirm("\nDo you overide it?")
-        if not override:
-            export_dir = typer.prompt(
-                "\nPlease specify a exporting directory name")
-            export_dir_path = os.path.join(directory, export_dir)
-        else:
-            shutil.rmtree(export_dir_path)
-    os.makedirs(export_dir_path)
+    export_dir_path = check_and_make_dir(root_path=directory,
+                                         dir_name=export_dir)
 
     # link the imgs directory
     imgs_export_path = os.path.join(export_dir_path, "imgs")
