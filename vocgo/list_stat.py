@@ -19,28 +19,32 @@ from .utilities import VocCallback, ANN_DIR_NAME, IMAGE_DIR_NAME, tip_info_for_d
 ARGUMENT_HELP = "The directory of VOC dataset containing two dirs(imgs and anns)"
 
 
-def list_stat(directory: str, filter_labels=None, anns_path: str = None) -> Dict[str, Any]:
+def list_stat(directory: str,
+              filter_labels=None,
+              anns_export_path: str = None,
+              anns_dir_name: str = ANN_DIR_NAME,
+              imgs_dir_name: str = IMAGE_DIR_NAME) -> Dict[str, Any]:
     """analyze the VOC dataset
 
     Args:
         directory (str): the directory of VOC dataset
         filter_labels (iterable obj): the necessary labels
-        anns_path (str): anns target path
+        export_path (str): anns target path
 
     Returns:
         Dict[str, Any]: the statistics data
     """
 
     if filter_labels:
-        if not anns_path:
+        if not anns_export_path:
             raise Exception(
                 "Need to specify anns directory path if you specify the filter_labels!")
-        if not os.path.exists(anns_path):
+        if not os.path.exists(anns_export_path):
             raise Exception(
                 "The anns path to export annotation file does not exist!")
 
-    anns_dir = os.path.join(directory, ANN_DIR_NAME)
-    imgs_dir = os.path.join(directory, IMAGE_DIR_NAME)
+    anns_dir_path = os.path.join(directory, anns_dir_name)
+    imgs_dir_path = os.path.join(directory, imgs_dir_name)
     info = {
         "no_danger": 0,
         "danger": 0,
@@ -49,7 +53,7 @@ def list_stat(directory: str, filter_labels=None, anns_path: str = None) -> Dict
         "valid_imgs": []
     }
 
-    img_names = os.listdir(imgs_dir)
+    img_names = os.listdir(imgs_dir_path)
     tip_info = typer.style(
         "\nAnalyzing the directory(", fg=typer.colors.BRIGHT_BLACK)
     tip_info += typer.style(f"{directory}",
@@ -63,11 +67,11 @@ def list_stat(directory: str, filter_labels=None, anns_path: str = None) -> Dict
         "empty_char": ""
     }
     with typer.progressbar(**processbar_args) as progress:
-        if filter_labels or anns_path:
+        if filter_labels or anns_export_path:
             for img_name in img_names:
                 dangerous = False
                 ann_name = f"{os.path.splitext(img_name)[0]}.xml"
-                ann_path = os.path.join(anns_dir, ann_name)
+                ann_path = os.path.join(anns_dir_path, ann_name)
                 if not os.path.exists(ann_path):
                     info["no_xml"].append(img_name)
                     continue
@@ -87,7 +91,7 @@ def list_stat(directory: str, filter_labels=None, anns_path: str = None) -> Dict
                 if dangerous:
                     info["danger"] += 1
                     info["valid_imgs"].append(img_name)
-                    ann_export_path = os.path.join(anns_path, ann_name)
+                    ann_export_path = os.path.join(anns_export_path, ann_name)
                     for obj in to_remove:
                         xml_root.remove(obj)
                     xml_tree.write(ann_export_path)
@@ -97,7 +101,7 @@ def list_stat(directory: str, filter_labels=None, anns_path: str = None) -> Dict
         else:
             for img_name in img_names:
                 ann_name = f"{os.path.splitext(img_name)[0]}.xml"
-                ann_path = os.path.join(anns_dir, ann_name)
+                ann_path = os.path.join(anns_dir_path, ann_name)
                 if not os.path.exists(ann_path):
                     info["no_xml"].append(img_name)
                     continue
@@ -118,8 +122,12 @@ def list_stat(directory: str, filter_labels=None, anns_path: str = None) -> Dict
 
 def main(directory: str = typer.Argument(default="./",
                                          callback=VocCallback.check_dir_valid,
-                                         help=ARGUMENT_HELP)):
-    count = list_stat(directory=directory)
+                                         help=ARGUMENT_HELP),
+         anns_dir: str = typer.Option("anns", help="the annotations directory"),
+         imgs_dir: str = typer.Option("imgs", help="the images directory")):
+    count = list_stat(directory=directory,
+                      anns_dir_name=anns_dir,
+                      imgs_dir_name=imgs_dir)
     typer.echo()
     tip_info = typer.style("1. includes ", fg=typer.colors.BRIGHT_BLUE)
     tip_info += typer.style(f"{len(count['cls'])}",

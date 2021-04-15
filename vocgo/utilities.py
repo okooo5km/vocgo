@@ -28,11 +28,6 @@ class VocCallback:
         if os.path.isfile(value):
             raise typer.BadParameter(
                 f"{value} is a file，please specify a valid directory!")
-        file_dirs = os.listdir(value)
-        if ANN_DIR_NAME not in file_dirs or IMAGE_DIR_NAME not in file_dirs:
-            msg = typer.style(f"The DIRECTORY {value} does not containes {ANN_DIR_NAME} or {IMAGE_DIR_NAME}",
-                              fg=typer.colors.BRIGHT_RED)
-            raise typer.BadParameter(msg)
         return value
 
 

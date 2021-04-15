@@ -60,14 +60,16 @@ def main(directory: str = typer.Argument(default="./",
                                          help=ARGUMENT_HELP),
          ratio: float = typer.Option(default=1.0, help=RATIO_HELP),
          labels: str = typer.Option(None, help="The label to learn", ),
-         export_dir: str = typer.Option(None, help="The exporting dir path of the training files")):
+         export_dir: str = typer.Option(None, help="The exporting dir path of the training files"),
+         anns_dir: str = typer.Option("anns", help="the annotations directory"),
+         imgs_dir: str = typer.Option("imgs", help="the images directory")):
 
     directory = os.path.abspath(directory)
     if not export_dir:
         export_dir = typer.prompt(
             "\nPlease specify a exporting directory name")
     export_dir_path = os.path.join(directory, export_dir)
-    imgs_path = os.path.join(directory, "imgs")
+    imgs_path = os.path.join(directory, imgs_dir)
 
     # confirm to create the export directory
     if os.path.exists(export_dir_path):
@@ -99,7 +101,9 @@ def main(directory: str = typer.Argument(default="./",
 
     info = list_stat(directory=directory,
                      filter_labels=label,
-                     anns_path=anns_export_path)
+                     anns_export_path=anns_export_path,
+                     anns_dir_name=anns_dir,
+                     imgs_dir_name=imgs_dir)
 
     labels = sorted(list(info["cls"].keys()))
 
