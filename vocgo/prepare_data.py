@@ -89,10 +89,13 @@ def main(directory: str = typer.Argument(default="./",
     os.system(link_imgs_command)
     os.makedirs(anns_export_path, exist_ok=True)
 
-    if "," in labels:
-        label = labels.split(",")
+    if labels:
+        if "," in labels:
+            label = labels.split(",")
+        else:
+            label = [labels]
     else:
-        label = [labels]
+        label = None
 
     info = list_stat(directory=directory,
                      filter_labels=label,
