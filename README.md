@@ -69,7 +69,7 @@ For example:
 vocgo list ./
 ```
 
-<img src="https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/list-20210410170643.png" width="420px">
+<img src="https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/list-20210410170643.png" style="zoom:50%;">
 
 ### split
 
@@ -83,4 +83,16 @@ For example:
 vocgo split --labels=mask,no_mask --ratio=0.9 ./
 ```
 
-<img src="https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/split-20210410170657.png" width="640px">
+<img src="https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/split-20210410170657.png" style="zoom:50%;">
+
+### merge
+
+This subcommad can help us to merge some specified labels to a same label, it can generate the new annotation files into the specified directory!
+
+For example:
+
+```shell
+vocgo merge --anns-dir anns .
+```
+
+<img src="https://pichome-1254392422.cos.ap-chengdu.myqcloud.com/uPic/merge-20210415140753.png" style="zoom:50%;">
