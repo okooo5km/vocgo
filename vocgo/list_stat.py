@@ -88,7 +88,7 @@ def list_stat(directory: str,
                         dangerous = True
                         if obj_cls not in info["cls"]:
                             info["cls"][obj_cls] = []
-                        info["cls"][obj_cls].append(img_id)
+                        info["cls"][obj_cls].append(img_name)
                 if dangerous:
                     info["danger"] += 1
                     info["valid_imgs"].append(img_name)
@@ -115,7 +115,7 @@ def list_stat(directory: str,
                         obj_cls = obj.find("name").text
                         if obj_cls not in info["cls"]:
                             info["cls"][obj_cls] = []
-                        info["cls"][obj_cls].append(img_id)
+                        info["cls"][obj_cls].append(img_name)
                 else:
                     info["no_danger"] += 1
                 progress.update(1)

@@ -34,14 +34,36 @@ def save_datapath_to_txt(imgs, save_file):
             f.write(line)
 
 
-def prepare_train_valid_data(data_dir, imgs, train_ratio) -> Dict[str, int]:
+def prepare_train_valid_data(data_dir, imgs, imgids_per_cls, train_ratio) -> Dict[str, int]:
     img_n = len(imgs)
-    train_n = int(img_n*train_ratio)
+
+    train_n_per_cls = {cls: int(len(imgids)*train_ratio)
+                       for cls, imgids in imgids_per_cls.items()}
+
+    train_imgids = []
+    processbar_args = {
+        "length": len(imgids_per_cls),
+        "fill_char": "█",
+        "label": "",
+        "empty_char": ""
+    }
+    with typer.progressbar(**processbar_args) as progress:
+        for cls, imgids in imgids_per_cls.items():
+            imgids_part1 = [imgid for imgid in imgids if imgid in train_imgids]
+            imgids_part2 = [
+                imgid for imgid in imgids if imgid not in train_imgids]
+            train_imgids.extend(
+                imgids_part2[0:train_n_per_cls[cls] - len(imgids_part1)])
+            progress.update(1)
 
     shuffle(imgs)
+    imgs = set(imgs)
+    train_imgids = set(train_imgids)
+    valid_imgids = list(imgs - train_imgids)
+    save_datapath_to_txt(train_imgids, osp.join(data_dir, "train.txt"))
+    save_datapath_to_txt(valid_imgids, osp.join(data_dir, "valid.txt"))
 
-    save_datapath_to_txt(imgs[0:train_n], osp.join(data_dir, "train.txt"))
-    save_datapath_to_txt(imgs[train_n:img_n], osp.join(data_dir, "valid.txt"))
+    train_n = len(train_imgids)
 
     return {
         "train": train_n,
@@ -97,8 +119,11 @@ def main(directory: str = typer.Argument(default="./",
     labels = sorted(list(info["cls"].keys()))
 
     # generate train.txt、 valid.txt
+    typer.secho("\nDistributing the data ...\n",
+                fg=typer.colors.BRIGHT_BLACK)
     count = prepare_train_valid_data(export_dir_path,
                                      info["valid_imgs"],
+                                     info["cls"],
                                      ratio)
     # generate label_list
     prepare_lable_list(export_dir_path, labels)
