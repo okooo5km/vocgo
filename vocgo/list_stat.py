@@ -70,7 +70,8 @@ def list_stat(directory: str,
         if filter_labels or anns_export_path:
             for img_name in img_names:
                 dangerous = False
-                ann_name = f"{os.path.splitext(img_name)[0]}.xml"
+                img_id = os.path.splitext(img_name)[0]
+                ann_name = f"{img_id}.xml"
                 ann_path = os.path.join(anns_dir_path, ann_name)
                 if not os.path.exists(ann_path):
                     info["no_xml"].append(img_name)
@@ -86,8 +87,8 @@ def list_stat(directory: str,
                             continue
                         dangerous = True
                         if obj_cls not in info["cls"]:
-                            info["cls"][obj_cls] = 0
-                        info["cls"][obj_cls] += 1
+                            info["cls"][obj_cls] = []
+                        info["cls"][obj_cls].append(img_id)
                 if dangerous:
                     info["danger"] += 1
                     info["valid_imgs"].append(img_name)
@@ -100,7 +101,8 @@ def list_stat(directory: str,
                 progress.update(1)
         else:
             for img_name in img_names:
-                ann_name = f"{os.path.splitext(img_name)[0]}.xml"
+                img_id = os.path.splitext(img_name)[0]
+                ann_name = f"{img_id}.xml"
                 ann_path = os.path.join(anns_dir_path, ann_name)
                 if not os.path.exists(ann_path):
                     info["no_xml"].append(img_name)
@@ -112,8 +114,8 @@ def list_stat(directory: str,
                     for obj in xml_root.iter("object"):
                         obj_cls = obj.find("name").text
                         if obj_cls not in info["cls"]:
-                            info["cls"][obj_cls] = 0
-                        info["cls"][obj_cls] += 1
+                            info["cls"][obj_cls] = []
+                        info["cls"][obj_cls].append(img_id)
                 else:
                     info["no_danger"] += 1
                 progress.update(1)
@@ -125,18 +127,18 @@ def main(directory: str = typer.Argument(default="./",
                                          help=ARGUMENT_HELP),
          anns_dir: str = typer.Option("anns", help="the annotations directory"),
          imgs_dir: str = typer.Option("imgs", help="the images directory")):
-    count = list_stat(directory=directory,
-                      anns_dir_name=anns_dir,
-                      imgs_dir_name=imgs_dir)
+    info = list_stat(directory=directory,
+                     anns_dir_name=anns_dir,
+                     imgs_dir_name=imgs_dir)
     typer.echo()
     tip_info = typer.style("1. includes ", fg=typer.colors.BRIGHT_BLUE)
-    tip_info += typer.style(f"{len(count['cls'])}",
+    tip_info += typer.style(f"{len(info['cls'])}",
                             fg=typer.colors.BRIGHT_GREEN, bold=True)
     tip_info += typer.style(" classes，the statistics of them as follows：\n\n",
                             fg=typer.colors.BRIGHT_BLUE)
-
-    tip_info += tip_info_for_dict(count["cls"], key_width=20)
+    count_of_cls = {k: len(v) for k, v in info["cls"].items()}
+    tip_info += tip_info_for_dict(count_of_cls, key_width=20)
     tip_info += typer.style(f"\n2. the statistics of images as follows：\n\n",
                             fg=typer.colors.BRIGHT_BLUE)
-    tip_info += tip_info_for_dict(count, only_int=True, key_width=20)
+    tip_info += tip_info_for_dict(info, only_int=True, key_width=20)
     typer.echo(tip_info)
