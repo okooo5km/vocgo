@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 """
-@fileName      : merge_labels.py
+@fileName      : rename_labels.py
 @desc          : 
 @dateTime      : 2021/04/15 11:11:49
 @author        : 5km
@@ -15,7 +15,7 @@ import xml.etree.ElementTree as ET
 from vocgo.list_stat import ARGUMENT_HELP
 from .utilities import VocCallback, check_and_make_dir
 
-LABELS_PROMP_TIP = "\n1. Which labels do you want to merge?"\
+LABELS_PROMP_TIP = "\n1. Which labels do you want to rename?"\
     "(You can use subcommand - list - to check labels!)\n"\
     "Need comma between labels [e.g. person,bike,kite]"
 
@@ -27,7 +27,7 @@ def main(directory: str = typer.Argument(default="./",
          imgs_dir: str = typer.Option("imgs", help="the images directory")
          ):
     labels_str: str = typer.prompt(LABELS_PROMP_TIP).replace(" ", "")
-    labels_to_merge = labels_str.split(",")
+    labels_to_rename = labels_str.split(",")
 
     target_label: str = typer.prompt(
         "\n2. Please give a new label name"
@@ -45,7 +45,7 @@ def main(directory: str = typer.Argument(default="./",
 
     image_names = os.listdir(imgs_path)
 
-    typer.secho(f"\nMerging {labels_str} to {target_label} ...",
+    typer.secho(f"\nRenaming {labels_str} to {target_label} ...",
                 fg=typer.colors.BRIGHT_BLACK)
 
     processbar_args = {
@@ -67,7 +67,7 @@ def main(directory: str = typer.Argument(default="./",
                 continue
             for obj in xml_root.iter("object"):
                 obj_name = obj.find("name")
-                if obj_name.text not in labels_to_merge:
+                if obj_name.text not in labels_to_rename:
                     continue
                 obj_name.text = target_label
             xml_tree.write(ann_export_path)
