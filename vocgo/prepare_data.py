@@ -10,7 +10,6 @@
 """
 
 import os
-import shutil
 import os.path as osp
 from typing import Dict
 from random import shuffle
