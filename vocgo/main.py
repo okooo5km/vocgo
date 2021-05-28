@@ -13,7 +13,7 @@
 import typer
 
 from .consts import __description__
-from . import version, list_stat, prepare_data, merge_labels
+from . import version, list_stat, prepare_data, merge_labels, remove_labels
 
 app = typer.Typer(help=__description__)
 
@@ -23,3 +23,4 @@ app.command("list", help="Analyze the dataset and display the statistics")(
 app.command("split", help="Split the dataset and generate the train files for model training and evaluating")(
     prepare_data.main)
 app.command("merge", help="Merge the specified labels")(merge_labels.main)
+app.command("remove", help="Remove the specified labels")(remove_labels.main)
