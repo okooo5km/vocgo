@@ -13,7 +13,7 @@
 import typer
 
 from .consts import __description__
-from . import version, list_stat, prepare_data, rename_labels, remove_labels
+from . import version, list_stat, prepare_data, rename_labels, remove_labels, normalize
 
 app = typer.Typer(help=__description__)
 
@@ -24,3 +24,5 @@ app.command("split", help="Split the dataset and generate the train files for mo
     prepare_data.main)
 app.command("rename", help="Rename the specified labels")(rename_labels.main)
 app.command("remove", help="Remove the specified labels")(remove_labels.main)
+app.command("normalize", help="Calculate the normalization parameters")(
+    normalize.main)
