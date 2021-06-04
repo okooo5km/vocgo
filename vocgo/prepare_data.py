@@ -23,17 +23,25 @@ RATIO_HELP = "The distribution ratio of model training and evaluating"
 LABEL_SORT_HELP = "The sort type for class label"
 
 
-def save_datapath_to_txt(imgs, save_file):
+def save_datapath_to_txt(imgs,
+                         save_file,
+                         export_anns_dir,
+                         export_imgs_dir):
     if osp.exists(save_file):
         os.remove(save_file)
     with open(save_file, "w") as f:
         for img in imgs:
             ann = osp.splitext(img)[0] + ".xml"
-            line = f"./imgs/{img} ./anns/{ann}\n"
+            line = f"{export_imgs_dir}/{img} {export_anns_dir}/{ann}\n"
             f.write(line)
 
 
-def prepare_train_valid_data(data_dir, imgs, imgids_per_cls, train_ratio) -> Dict[str, int]:
+def prepare_train_valid_data(data_dir,
+                             imgs,
+                             imgids_per_cls,
+                             train_ratio,
+                             export_anns_dir,
+                             export_imgs_dir) -> Dict[str, int]:
     img_n = len(imgs)
 
     train_n_per_cls = {cls: int(len(imgids)*train_ratio)
@@ -59,8 +67,14 @@ def prepare_train_valid_data(data_dir, imgs, imgids_per_cls, train_ratio) -> Dic
     imgs = set(imgs)
     train_imgids = set(train_imgids)
     valid_imgids = list(imgs - train_imgids)
-    save_datapath_to_txt(train_imgids, osp.join(data_dir, "train.txt"))
-    save_datapath_to_txt(valid_imgids, osp.join(data_dir, "valid.txt"))
+    save_datapath_to_txt(train_imgids,
+                         osp.join(data_dir, "train.txt"),
+                         export_anns_dir=export_anns_dir,
+                         export_imgs_dir=export_imgs_dir)
+    save_datapath_to_txt(valid_imgids,
+                         osp.join(data_dir, "valid.txt"),
+                         export_anns_dir=export_anns_dir,
+                         export_imgs_dir=export_imgs_dir)
 
     train_n = len(train_imgids)
 
@@ -89,14 +103,14 @@ def main(directory: str = typer.Argument(default="./",
     if not export_dir:
         export_dir = typer.prompt(
             "\nPlease specify a exporting directory name")
-    imgs_path = os.path.join(directory, imgs_dir)
+    imgs_path = os.path.abspath(os.path.join(directory, imgs_dir))
 
     export_dir_path = check_and_make_dir(root_path=directory,
                                          dir_name=export_dir)
 
     # link the imgs directory
-    imgs_export_path = os.path.join(export_dir_path, "imgs")
-    anns_export_path = os.path.join(export_dir_path, "anns")
+    imgs_export_path = os.path.abspath(os.path.join(export_dir_path, imgs_dir))
+    anns_export_path = os.path.abspath(os.path.join(export_dir_path, anns_dir))
     link_imgs_command = f"ln -s {imgs_path} {imgs_export_path}"
     os.system(link_imgs_command)
     os.makedirs(anns_export_path, exist_ok=True)
@@ -123,7 +137,9 @@ def main(directory: str = typer.Argument(default="./",
     count = prepare_train_valid_data(export_dir_path,
                                      info["valid_imgs"],
                                      info["cls"],
-                                     ratio)
+                                     ratio,
+                                     export_anns_dir=anns_export_path,
+                                     export_imgs_dir=imgs_export_path)
     # generate label_list
     prepare_lable_list(export_dir_path, labels)
 
